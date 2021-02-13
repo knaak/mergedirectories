@@ -3,8 +3,8 @@ import hashlib
 
 from shutil import copyfile
 
-source_dir = "z:\\dirs\\dir1"
-desintation_dir = "z:\\dirs\\merged"
+source_dir = "Z:\\amazon-backup\\MyPhotos"
+desintation_dir = "Z:\\PhotosMaster"
 
 count_of_found_files = 0
 count_duplicates = 0
@@ -63,18 +63,21 @@ for root, subdirs, files in os.walk(source_dir):
         if (md5 in dict_hashes):
             dict_hashes[md5] = dict_hashes[md5] + "," + filePath
             count_duplicates = count_duplicates +1
+            print('d',end='')
         else:
             count_of_found_files = count_of_found_files +1
             dict_hashes[md5] = filePath
+            print(".", end='')
 
-print("dictionary of hashes")
-print (dict_hashes)
+print(str.format("Found {0} files of which {1} were actually duplicates", count_of_found_files, count_duplicates))
+
+#input("press enter to start copy process")
 
 print("Now we will move exactly one copy of each of the duplicates to its new location, ignoring original directory structure")
 
 for item in dict_hashes:
     locations = dict_hashes[item].split(',')
-    print(str.format("This file {0} was found in {1} locations", item, len(dict_hashes[item].split(','))))
+    #print(str.format("This file {0} was found in {1} locations", item, len(dict_hashes[item].split(','))))
     new_name = copyfile_unique(locations[0], desintation_dir)
     if (new_name):
         print(str.format("Copied {0} to new location as {1}", item, new_name))
