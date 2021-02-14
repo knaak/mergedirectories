@@ -1,6 +1,8 @@
 import exifread
 import os
 
+import tmgshare
+
 path_name = "z:\\photosmaster\\IMG_1941.JPG"
 
 
@@ -17,9 +19,10 @@ def make_file_by_date_subdir(path_name):
 
     
     date_directory = str.format("{0}\\{1}\\{2}", year_month_day[0], year_month_day[1], year_month_day[2])
-    os.makedirs(date_directory)
+    if not os.path.exists(date_directory):
+        os.makedirs(date_directory)
 
     return date_directory +"\\" + filename
     
 
-print(move_file_to_date_subdir(path_name))
+print(make_file_by_date_subdir(path_name))

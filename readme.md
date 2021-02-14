@@ -1,7 +1,7 @@
 Designed to take my many Photo's back ups located in several places on my computers, old hard drives, DVD backups
 and be able to merge them into a single Master folder which is virtually guarenteed to not have duplicate photos. 
 
-Program works in two steps to allow for review before changes are made:
+Mergedir works in two steps to allow for review before changes are made:
 
 Step 1.
     Create a dictionary of MD5 hashes of the file contents of a directory (and all subdirs)
@@ -19,4 +19,14 @@ Step 2.
 
 I should be able to run this program against every directory of photos that i have and ensure that I have a flattened directory of those photos with exactly
 one copy.
+
+After mergedir, you may have many files with the same contents but different names.  the next step is to remove identical files with different name.
+
+run delete_duplicates.py
+
+This will not actually delete, but add a new extension .del to the files, this will allow you to review and sanity check before deleting
+
+once that is done, we will have a clean list of distinct files, now its time to rebuild the directory structure based on exif data if your files are photos.
+
+run rebuild_directory.py.
 
