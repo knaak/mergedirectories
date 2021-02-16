@@ -2,11 +2,12 @@ import os
 import hashlib
 import time, sys
 
-from shutil import copyfile
+from shutil import copy2
 
 def file_md(filename):    
     with open(filename, 'rb') as file_to_check:
         data = file_to_check.read()    
+        file_to_check.close()
         return hashlib.md5(data).hexdigest()
 
 def combine_file(dir, file, ext):
@@ -14,9 +15,13 @@ def combine_file(dir, file, ext):
 
 def create_unique_name(destination_dir, filepart, fileext):
     while (os.path.exists(combine_file(destination_dir, filepart, fileext))):
-        filepart = filepart +"_"
+        filepart = filepart +"_"        
 
     return combine_file(destination_dir, filepart, fileext)
+
+def file_is_same(file1, file2):
+    if (file_md(file1) == file_md(file2)): return True
+    return False
 
 def copyfile_unique(fullpath, destinationdir):
     fileparts = fullpath.split('\\')
@@ -31,15 +36,14 @@ def copyfile_unique(fullpath, destinationdir):
     new_name =""
     #first lets make sure that the name doesn't collide
     if (os.path.exists(destination_file)):
-        src_md5 = file_md(fullpath)
-        dest_md5 =  file_md(destination_file)
-
-        if (src_md5 == dest_md5): 
+        if (file_is_same(fullpath, destination_file)):
             print("File exists in destination", fullpath)
-    else:
-        new_name = create_unique_name(destinationdir, filename_wo_ext, filename_ext)
-        copyfile(fullpath, new_name)
-        print(str.format('Copied {0} as {1} ', fullpath, new_name))
+            return ""
+    
+    new_name = create_unique_name(destinationdir, filename_wo_ext, filename_ext)
+
+    copy2(fullpath, new_name)
+    print(str.format('Copied {0} as {1} ', fullpath, new_name))
 
     return new_name
 
@@ -49,6 +53,7 @@ def make_file_by_date_subdir(path_name):
 
     f = open(path_name, 'rb')
     tags = exifread.process_file(f, details=False)
+    f.close()
 
     rawdate= str(tags["Image DateTime"])
     d = rawdate.split(' ')
@@ -90,11 +95,16 @@ def go_copy_files(dict_hashes, source_dir, destination_dir):
     for item in dict_hashes:
         locations = dict_hashes[item].split(',')
         new_name = copyfile_unique(locations[0], destination_dir)
+
+        if (not new_name):
+            continue
+
         count= count+1
         sys.stdout.flush()
 
         if (new_name):
             print(str.format("Copied {0} to new location as {1}", item, new_name))
+            
 
         if ((count % 250) == 0):
             print("Percent complete:", int((count/len(dict_hashes)*100)))

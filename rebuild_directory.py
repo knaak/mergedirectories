@@ -39,7 +39,7 @@ def make_file_by_date_subdir(path_name):
             if (len(year_month_day) != 2):
                 return ""
         
-        date_directory = str.format("{0}\\{1}\\{2}", source_dir, year_month_day[0], year_month_day[1])
+        date_directory = str.format("{0}\\{1}\\{2:02d}", source_dir, year_month_day[0], int(year_month_day[1]))
         if not os.path.exists(date_directory):
             os.makedirs(date_directory)
 
