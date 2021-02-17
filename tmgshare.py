@@ -72,7 +72,7 @@ def create_list_of_unique_files(source_dir):
     print ("This will create a dictionary by hash of file contents with all of the locations of duplicates")
     for root, subdirs, files in os.walk(source_dir):
         for file in files:        
-            if (file.endswith('.del')): continue
+            if (file.endswith('.del')): continue  #one of my processes for del doesn't delete, but just adds a .del extension for easy deletion afterwards.  no need to reprocess.
 
             filePath = os.path.join(root, file)
             md5 = file_md(filePath)
@@ -116,7 +116,7 @@ def go_delete_duplicate(dict_hashes, directory):
         if (len(locations) == 1): 
             continue
 
-        #I want to keep the original with the shortest name, just because
+        #I want to keep the original with the shortest name because that is likely the original
         ndx = 0
         ndx_len = 1000
         count = 0
@@ -134,13 +134,13 @@ def go_delete_duplicate(dict_hashes, directory):
             else:
                 if (".del" not in files): 
                     print("Delete:", files)                
-                    os.rename(files, files+".del")
+                    os.rename(files, files+".del") #don't delete (just in case) and this allows the user to verify before actually deleting
             c= c+1
             print("=================================================================")
             sys.stdout.buffer.flush()
 
 def getmediacreationtime(path_name):
-    properties = propsys.SHGetPropertyStoreFromParsingName(path_name)
+    properties = propsys.SHGetPropertyStoreFromParsingName(path_name)  #this is windows only... 
     dt = properties.GetValue(pscon.PKEY_Media_DateEncoded).GetValue()
     if (not dt): return ""
     return [dt.year, dt.month]
@@ -166,7 +166,7 @@ def make_file_by_date_subdir(path_name):
             if (len(year_month_day) != 2):
                 return ""
         
-        date_directory = str.format("{0}\\{1}\\{2:02d}", source_dir, year_month_day[0], int(year_month_day[1]))
+        date_directory = str.format("{0}\\{1}\\{2:02d}", path_name, year_month_day[0], int(year_month_day[1]))
         if not os.path.exists(date_directory):
             os.makedirs(date_directory)
 
